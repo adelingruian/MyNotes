@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+<title>To Do - Add activity</title>
+{% endblock %}
+
+{% block contents %}
+    <div class="container-editor">
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='body') }}
+    {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "outline-dark"})}}
+    </div>
+{% endblock %}

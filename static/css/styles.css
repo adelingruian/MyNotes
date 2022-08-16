@@ -1,0 +1,112 @@
+/*FAF3E3*/
+/*FF9F29*/
+/*1A4D2E*/
+/*000000*/
+
+body {
+    background-color: #FF9F29;
+    background-color: #FAF3E3;
+
+}
+
+.todo-item {
+    margin: 3% 20%;
+    padding: 10px;
+    background-color: #FAF3E3;
+    box-shadow: 1px 3px 5px 1px #000000;
+}
+
+h1 {
+    padding: 10px;
+}
+
+.container-not-logged {
+    text-align: center;
+}
+
+
+.navbar {
+    background-color: #1A4D2E;
+    padding: 1% 10%;
+}
+
+.navbar-nav .nav-link.active {
+    color: #FF9F29;
+}
+
+.navbar-brand:hover {
+    color: #FF9F29;
+}
+
+.navbar-nav .nav-link {
+    color: #FAF3E3;
+}
+.navbar-nav .nav-link:hover {
+    color: #FF9F29;
+}
+
+.navbar-brand {
+    color: #FF9F29;
+}
+
+.navbar-brand i {
+    padding: 10px;
+}
+
+.edit-button, .delete-button {
+    padding: 10px;
+    font-size: 1.5rem;
+}
+
+.edit-button:hover {
+    color: #1A4D2E;
+    font-size: 1.7rem;
+}
+
+.delete-button:hover  {
+    color: red;
+    font-size: 1.7rem;
+    padding: 10px 10px 10px 8px;
+}
+
+.todo-item a {
+    all: unset;
+}
+
+#footer {
+    background-color: #1A4D2E;
+    height: 80px;
+    padding: 0 10%;
+}
+.button-container {
+    text-align: center;
+    padding-bottom: 3%;
+    padding-top: 3%;
+}
+
+.btn-outline-dark {
+    color: #1A4D2E;
+}
+
+.btn-outline-dark:hover {
+    background-color: #1A4D2E;
+    color: #FF9F29;
+}
+
+.container-editor {
+    padding: 3% 20%
+}
+
+.container-small-form {
+    padding: 3% 40%
+}
+
+
+
+.control-label {
+    padding: 10px;
+}
+
+#submit {
+    margin-top: 20px
+}

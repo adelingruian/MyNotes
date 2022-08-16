@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}
+<title>Home 2</title>
+{% endblock %}
+
+{% block home %}
+active
+{% endblock %}
+
+{% block contents %}
+    {% if not current_user.is_authenticated %}
+        <div class="container-not-logged">
+            <h1 class=>You must be logged in to create your list.</h1>
+        </div>
+    {% endif %}
+    {% for task in tasks %}
+        <div class="todo-item">
+            <div class="container fluid row">
+                <h1 class="todo-title col-8"> {{ task.title }}</h1>
+                <ul class="nav justify-content-end col-4">
+                    <li class="nav-item edit-button">
+                        <a href="{{ url_for('edit', task_id=task.id) }}"><i class="fa-solid fa-pencil"></i></a>
+                    </li>
+                    <li class="nav-item delete-button">
+                        <a href="{{ url_for('delete', task_id=task.id) }}"><i class="fa-solid fa-x"></i></a>
+                    </li>
+                </ul>
+                <p>
+                    {{ task.description | safe() }}
+                </p>
+                <p><em>Due date: {{ task.due_date }}</em></p>
+            </div>
+        </div>
+    {% endfor %}
+    {% if current_user.is_authenticated %}
+    <div class="button-container">
+        <a href="{{ url_for('add_activity') }}"><button class="btn btn-large btn-outline-dark"> Add new activity </button></a>
+    </div>
+    {% endif %}
+
+{% endblock %}
