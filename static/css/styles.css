@@ -30,6 +30,10 @@ h1 {
     padding: 1% 10%;
 }
 
+.navbar-nav {
+    text-align: center;
+}
+
 .navbar-nav .nav-link.active {
     color: #FF9F29;
 }
@@ -113,4 +117,8 @@ h1 {
 
 .error {
     color: red;
+}
+
+img {
+    margin: 0 10px;
 }

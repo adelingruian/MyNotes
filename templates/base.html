@@ -18,7 +18,6 @@
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{{ url_for('index') }}"><i class="fa-solid fa-list-check"></i>To Do</a>
-                <p>Current user: {{ current_user.name }}</p>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -32,6 +31,9 @@
                             <a class="nav-link {% block register %} {% endblock %}" href="{{ url_for('register') }}">Register</a>
                         </li>
                         {% else %}
+                        <li class="nav-item">
+                            <img src="{{ current_user.email | gravatar }}" alt="">
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link {% block home %} {% endblock %}"  href="{{ url_for('index') }}">My list</a>
                         </li>

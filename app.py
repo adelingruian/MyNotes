@@ -7,7 +7,7 @@ from forms import CreateActivityForm, LoginForm, RegisterForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-import pandas
+from flask_gravatar import Gravatar
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///todo.db"
@@ -21,6 +21,14 @@ bootstrap = Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+gravatar = Gravatar(app,
+                    size=40,
+                    rating='g',
+                    default='retro',
+                    force_default=False,
+                    force_lower=False,
+                    use_ssl=False,
+                    base_url=None)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -87,16 +95,15 @@ def edit(task_id):
         due_date=datetime(int(date[2]), int(date[1]), int(date[0]))
     )
     if edit_form.validate_on_submit():
-       if task.title != edit_form.title.data:
+        if task.title != edit_form.title.data:
             if ToDo.query.filter_by(title=edit_form.title.data).first():
                 flash("This activity title already exists.")
-            else:
-                task.title = edit_form.title.data
-                task.description = edit_form.description.data
-                task.due_date = edit_form.due_date.data.strftime('%d/%m/%Y')
-
-                db.session.commit()
-                return redirect(url_for('index'))
+        else:
+            task.title = edit_form.title.data
+            task.description = edit_form.description.data
+            task.due_date = edit_form.due_date.data.strftime('%d/%m/%Y')
+            db.session.commit()
+            return redirect(url_for('index'))
     return render_template("add_activity.html", form=edit_form)
 
 
