@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -7,6 +7,7 @@ from forms import CreateActivityForm, LoginForm, RegisterForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+import pandas
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///todo.db"
@@ -20,9 +21,11 @@ bootstrap = Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
+
 
 class ToDo(db.Model):
     __tablename__ = "todos"
@@ -33,6 +36,7 @@ class ToDo(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     author = relationship("User", back_populates="tasks")
 
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -40,8 +44,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(30), unique=True, nullable=False)
     pass_hash = db.Column(db.String(50), nullable=False)
     tasks = relationship("ToDo", back_populates="author")
-
-db.create_all()
 
 
 @app.route('/')
@@ -53,22 +55,26 @@ def index():
         return render_template("index.html", tasks=all_tasks)
     return render_template("index.html", tasks=all_tasks)
 
+
 @login_required
 @app.route('/add-activity', methods=['GET', 'POST'])
 def add_activity():
     create_activity_form = CreateActivityForm()
     if create_activity_form.validate_on_submit():
-        # TODO Check if title already exists
-        new_todo = ToDo(
-            title=create_activity_form.title.data,
-            description=create_activity_form.description.data,
-            due_date=create_activity_form.due_date.data.strftime('%d/%m/%Y'),
-            author=current_user
-        )
-        db.session.add(new_todo)
-        db.session.commit()
-        return redirect(url_for('index'))
+        if ToDo.query.filter_by(title=create_activity_form.title.data).first():
+            flash("This title already exists.")
+        else:
+            new_todo = ToDo(
+                title=create_activity_form.title.data,
+                description=create_activity_form.description.data,
+                due_date=create_activity_form.due_date.data.strftime('%d/%m/%Y'),
+                author=current_user
+            )
+            db.session.add(new_todo)
+            db.session.commit()
+            return redirect(url_for('index'))
     return render_template("add_activity.html", form=create_activity_form)
+
 
 @login_required
 @app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
@@ -81,14 +87,18 @@ def edit(task_id):
         due_date=datetime(int(date[2]), int(date[1]), int(date[0]))
     )
     if edit_form.validate_on_submit():
-        # TODO check if title already exists
-        task.title = edit_form.title.data
-        task.description = edit_form.description.data
-        task.due_date = edit_form.due_date.data.strftime('%d/%m/%Y')
+       if task.title != edit_form.title.data:
+            if ToDo.query.filter_by(title=edit_form.title.data).first():
+                flash("This activity title already exists.")
+            else:
+                task.title = edit_form.title.data
+                task.description = edit_form.description.data
+                task.due_date = edit_form.due_date.data.strftime('%d/%m/%Y')
 
-        db.session.commit()
-        return redirect(url_for('index'))
+                db.session.commit()
+                return redirect(url_for('index'))
     return render_template("add_activity.html", form=edit_form)
+
 
 @login_required
 @app.route('/delete/<int:task_id>')
@@ -97,6 +107,7 @@ def delete(task_id):
     db.session.delete(task)
     db.session.commit()
     return redirect(url_for('index'))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -119,6 +130,7 @@ def register():
 
     return render_template("register.html", form=register_form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm()
@@ -132,12 +144,23 @@ def login():
             return redirect(url_for('index'))
     return render_template('login.html', form=login_form)
 
+
 @login_required
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
+@login_required
+@app.route('/download')
+def download():
+    with open("export.csv", "w") as file:
+        all_tasks = ToDo.query.filter_by(author_id=current_user.id).all()
+        for task in all_tasks:
+            new_line = f"{task.title},{task.description},{task.due_date}\n"
+            file.writelines(new_line)
+    return send_from_directory("", "export.csv")
 
 if __name__ == '__main__':
     app.run(debug=True)

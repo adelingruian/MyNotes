@@ -110,3 +110,7 @@ h1 {
 #submit {
     margin-top: 20px
 }
+
+.error {
+    color: red;
+}

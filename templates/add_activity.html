@@ -7,6 +7,15 @@
 
 {% block contents %}
     <div class="container-editor">
+    <div class="error">
+    {%  with messages = get_flashed_messages() %}
+        {% if messages %}
+            {%  for message in messages %}
+                <p>{{ message | safe() }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </div>
     {{ ckeditor.load() }}
     {{ ckeditor.config(name='body') }}
     {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "outline-dark"})}}
