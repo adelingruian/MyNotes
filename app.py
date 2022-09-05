@@ -99,12 +99,11 @@ def edit(task_id):
         if task.title != edit_form.title.data:
             if ToDo.query.filter_by(title=edit_form.title.data).first():
                 flash("This activity title already exists.")
-        else:
-            task.title = edit_form.title.data
-            task.description = edit_form.description.data
-            task.due_date = edit_form.due_date.data.strftime('%d/%m/%Y')
-            db.session.commit()
-            return redirect(url_for('index'))
+        task.title = edit_form.title.data
+        task.description = edit_form.description.data
+        task.due_date = edit_form.due_date.data.strftime('%d/%m/%Y')
+        db.session.commit()
+        return redirect(url_for('index'))
     return render_template("add_activity.html", form=edit_form)
 
 

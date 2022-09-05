@@ -127,3 +127,7 @@ h1 {
 img {
     margin: 0 10px;
 }
+
+.description-container {
+    padding-left: 30px;
+}
