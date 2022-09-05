@@ -11,9 +11,10 @@ from flask_gravatar import Gravatar
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///todo.db"
-app.config['SECRET_KEY'] = "Tractor"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+app.config['SECRET_KEY'] = "Tractor"
 
 ckeditor = CKEditor(app)
 bootstrap = Bootstrap(app)

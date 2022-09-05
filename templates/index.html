@@ -11,6 +11,10 @@ active
     {% if not current_user.is_authenticated %}
         <div class="container-not-logged">
             <h1 class=>You must be logged in to create your list.</h1>
+            <div class="homepage-buttons">
+                <a href="{{ url_for('login') }}"><button class="btn btn-lg btn-outline-dark">Login</button></a>
+                <a href="{{ url_for('register') }}"><button class="btn btn-lg btn-outline-dark">Register</button></a>
+            </div>
         </div>
     {% endif %}
     {% for task in tasks %}

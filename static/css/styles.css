@@ -4,9 +4,7 @@
 /*000000*/
 
 body {
-    background-color: #FF9F29;
     background-color: #FAF3E3;
-
 }
 
 .todo-item {
@@ -21,6 +19,7 @@ h1 {
 }
 
 .container-not-logged {
+    padding-top: 20vh;
     text-align: center;
 }
 
@@ -60,6 +59,7 @@ h1 {
 .edit-button, .delete-button {
     padding: 10px;
     font-size: 1.5rem;
+    transition: 0.5s;
 }
 
 .edit-button:hover {
@@ -85,7 +85,14 @@ h1 {
 .button-container {
     text-align: center;
     padding-bottom: 3%;
-    padding-top: 3%;
+}
+
+.homepage-buttons {
+    padding: 3% 30%;
+}
+
+.homepage-buttons button {
+    margin: 10px;
 }
 
 .btn-outline-dark {
@@ -104,8 +111,6 @@ h1 {
 .container-small-form {
     padding: 3% 40%
 }
-
-
 
 .control-label {
     padding: 10px;
