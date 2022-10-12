@@ -32,13 +32,13 @@ active
                 <div class="description-container">
                     {{ task.description | safe() }}
                 </div>
-                <p><em>Due date: {{ task.due_date }}</em></p>
+                <p><em>entry date: {{ task.entry_date }}</em></p>
             </div>
         </div>
     {% endfor %}
     {% if current_user.is_authenticated %}
     <div class="button-container">
-        <a href="{{ url_for('add_activity') }}"><button class="btn btn-large btn-outline-dark"> Add new activity </button></a>
+        <a href="{{ url_for('add_entry') }}"><button class="btn btn-large btn-outline-dark"> Add new entry </button></a>
     </div>
     {% endif %}
 

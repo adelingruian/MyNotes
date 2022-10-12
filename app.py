@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from flask_bootstrap import Bootstrap
-from forms import CreateActivityForm, LoginForm, RegisterForm
+from forms import CreateEntryForm, LoginForm, RegisterForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
@@ -41,9 +41,10 @@ class ToDo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30), unique=True, nullable=False)
     description = db.Column(db.String(100), nullable=False)
-    due_date = db.Column(db.String(15), nullable=False)
+    entry_date = db.Column(db.String(15), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     author = relationship("User", back_populates="tasks")
+
 
 
 class User(UserMixin, db.Model):
@@ -54,6 +55,7 @@ class User(UserMixin, db.Model):
     pass_hash = db.Column(db.String(50), nullable=False)
     tasks = relationship("ToDo", back_populates="author")
 
+db.create_all();
 
 @app.route('/')
 def index():
@@ -66,45 +68,49 @@ def index():
 
 
 @login_required
-@app.route('/add-activity', methods=['GET', 'POST'])
-def add_activity():
-    create_activity_form = CreateActivityForm()
-    if create_activity_form.validate_on_submit():
-        if ToDo.query.filter_by(title=create_activity_form.title.data).first():
+@app.route('/add-entry', methods=['GET', 'POST'])
+def add_entry():
+
+    today = datetime.today()
+    create_entry_form = CreateEntryForm(
+        entry_date=today
+    )
+    if create_entry_form.validate_on_submit():
+        if ToDo.query.filter_by(title=create_entry_form.title.data).first():
             flash("This title already exists.")
         else:
             new_todo = ToDo(
-                title=create_activity_form.title.data,
-                description=create_activity_form.description.data,
-                due_date=create_activity_form.due_date.data.strftime('%d/%m/%Y'),
+                title=create_entry_form.title.data,
+                description=create_entry_form.description.data,
+                entry_date=create_entry_form.entry_date.data.strftime('%d/%m/%Y'),
                 author=current_user
             )
             db.session.add(new_todo)
             db.session.commit()
             return redirect(url_for('index'))
-    return render_template("add_activity.html", form=create_activity_form)
+    return render_template("add_entry.html", form=create_entry_form)
 
 
 @login_required
 @app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
 def edit(task_id):
     task = ToDo.query.get(task_id)
-    date = task.due_date.split('/')
-    edit_form = CreateActivityForm(
+    date = task.entry_date.split('/')
+    edit_form = CreateEntryForm(
         title=task.title,
         description=task.description,
-        due_date=datetime(int(date[2]), int(date[1]), int(date[0]))
+        entry_date=datetime(int(date[2]), int(date[1]), int(date[0]))
     )
     if edit_form.validate_on_submit():
         if task.title != edit_form.title.data:
             if ToDo.query.filter_by(title=edit_form.title.data).first():
-                flash("This activity title already exists.")
+                flash("This entry title already exists.")
         task.title = edit_form.title.data
         task.description = edit_form.description.data
-        task.due_date = edit_form.due_date.data.strftime('%d/%m/%Y')
+        task.entry_date = edit_form.entry_date.data.strftime('%d/%m/%Y')
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template("add_activity.html", form=edit_form)
+    return render_template("add_entry.html", form=edit_form)
 
 
 @login_required
@@ -165,7 +171,7 @@ def download():
     with open("export.csv", "w") as file:
         all_tasks = ToDo.query.filter_by(author_id=current_user.id).all()
         for task in all_tasks:
-            new_line = f"{task.title},{task.description},{task.due_date}\n"
+            new_line = f"{task.title},{task.description},{task.entry_date}\n"
             file.writelines(new_line)
     return send_from_directory("", "export.csv")
 

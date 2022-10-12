@@ -3,11 +3,11 @@ from wtforms import StringField, SubmitField, PasswordField, DateField, EmailFie
 from wtforms.validators import DataRequired, URL, Email
 from flask_ckeditor import CKEditorField
 
-class CreateActivityForm(FlaskForm):
-    title = StringField("Activity Title", validators=[DataRequired()])
+class CreateEntryForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
     description = CKEditorField("Description", validators=[DataRequired()])
-    due_date = DateField("Due date", validators=[DataRequired()])
-    submit = SubmitField("Submit activity")
+    entry_date = DateField("Entry date", validators=[DataRequired()])
+    submit = SubmitField("Submit entry")
 
 class RegisterForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
