@@ -10,7 +10,7 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from flask_gravatar import Gravatar
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///todo.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///mynotes.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -36,14 +36,14 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
-class ToDo(db.Model):
-    __tablename__ = "todos"
+class Note(db.Model):
+    __tablename__ = "notes"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30), unique=True, nullable=False)
     description = db.Column(db.String(100), nullable=False)
     entry_date = db.Column(db.String(15), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    author = relationship("User", back_populates="tasks")
+    author = relationship("User", back_populates="notes")
 
 
 
@@ -53,14 +53,14 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(30), unique=True, nullable=False)
     pass_hash = db.Column(db.String(50), nullable=False)
-    tasks = relationship("ToDo", back_populates="author")
+    notes = relationship("Note", back_populates="author")
 
 db.create_all();
 
 @app.route('/')
 def index():
     try:
-        all_tasks = ToDo.query.filter_by(author_id=current_user.id).all()
+        all_tasks = Note.query.filter_by(author_id=current_user.id).all()
     except AttributeError:
         all_tasks = []
         return render_template("index.html", tasks=all_tasks)
@@ -76,16 +76,16 @@ def add_entry():
         entry_date=today
     )
     if create_entry_form.validate_on_submit():
-        if ToDo.query.filter_by(title=create_entry_form.title.data).first():
+        if Note.query.filter_by(title=create_entry_form.title.data).first():
             flash("This title already exists.")
         else:
-            new_todo = ToDo(
+            new_note = Note(
                 title=create_entry_form.title.data,
                 description=create_entry_form.description.data,
                 entry_date=create_entry_form.entry_date.data.strftime('%d/%m/%Y'),
                 author=current_user
             )
-            db.session.add(new_todo)
+            db.session.add(new_note)
             db.session.commit()
             return redirect(url_for('index'))
     return render_template("add_entry.html", form=create_entry_form)
@@ -94,7 +94,7 @@ def add_entry():
 @login_required
 @app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
 def edit(task_id):
-    task = ToDo.query.get(task_id)
+    task = Note.query.get(task_id)
     date = task.entry_date.split('/')
     edit_form = CreateEntryForm(
         title=task.title,
@@ -103,7 +103,7 @@ def edit(task_id):
     )
     if edit_form.validate_on_submit():
         if task.title != edit_form.title.data:
-            if ToDo.query.filter_by(title=edit_form.title.data).first():
+            if Note.query.filter_by(title=edit_form.title.data).first():
                 flash("This entry title already exists.")
         task.title = edit_form.title.data
         task.description = edit_form.description.data
@@ -116,7 +116,7 @@ def edit(task_id):
 @login_required
 @app.route('/delete/<int:task_id>')
 def delete(task_id):
-    task = ToDo.query.get(task_id)
+    task = Note.query.get(task_id)
     db.session.delete(task)
     db.session.commit()
     return redirect(url_for('index'))
@@ -169,7 +169,7 @@ def logout():
 @app.route('/download')
 def download():
     with open("export.csv", "w") as file:
-        all_tasks = ToDo.query.filter_by(author_id=current_user.id).all()
+        all_tasks = Note.query.filter_by(author_id=current_user.id).all()
         for task in all_tasks:
             new_line = f"{task.title},{task.description},{task.entry_date}\n"
             file.writelines(new_line)

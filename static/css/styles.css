@@ -7,7 +7,7 @@ body {
     background-color: #FAF3E3;
 }
 
-.todo-item {
+.note-item {
     margin: 3% 20%;
     padding: 10px;
     background-color: #FAF3E3;
@@ -73,7 +73,7 @@ h1 {
     padding: 10px 10px 10px 8px;
 }
 
-.todo-item a {
+.note-item a {
     all: unset;
 }
 
@@ -84,7 +84,7 @@ h1 {
 }
 .button-container {
     text-align: center;
-    padding-bottom: 3%;
+    margin-top: 3%;
 }
 
 .homepage-buttons {

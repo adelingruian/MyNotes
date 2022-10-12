@@ -18,9 +18,9 @@ active
         </div>
     {% endif %}
     {% for task in tasks %}
-        <div class="todo-item">
+        <div class="note-item">
             <div class="container-fluid row">
-                <h1 class="todo-title col-8"> {{ task.title }}</h1>
+                <h1 class="note-title col-8"> {{ task.title }}</h1>
                 <ul class="nav justify-content-end col-4">
                     <li class="nav-item edit-button">
                         <a href="{{ url_for('edit', task_id=task.id) }}"><i class="fa-solid fa-pencil"></i></a>
